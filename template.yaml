@@ -1,3 +1,134 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Video processing app with AWS Fargate using Stackery
+Resources:
+  function95658278:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-function95658278
+      Description: !Sub
+        - Stackery Stack ${StackeryStackTagName} Environment ${StackeryEnvironmentTagName} Function ${ResourceName}
+        - ResourceName: testFunction
+      CodeUri: src/function95658278
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ecs:RunTask
+                - ecs:DescribeTasks
+                - ecs:StopTask
+              Resource:
+                - !Ref dockerTask7CD071
+                - !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:task/*
+        - Statement:
+            - Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource:
+                - !GetAtt dockerTask7CD071ExecutionRole.Arn
+                - !GetAtt dockerTask7CD071TaskRole.Arn
+      Events:
+        objectStore7DE86E3B:
+          Type: S3
+          Properties:
+            Bucket: !Ref objectStore7DE86E3B
+            Events:
+              - s3:ObjectCreated:*
+              - s3:ObjectRemoved:*
+      Environment:
+        Variables:
+          DOCKER_TASK_ARN: !Ref dockerTask7CD071
+          DOCKER_TASK_SUBNETS: !Join
+            - ','
+            - !Ref DefaultVPCSubnets
+    Metadata:
+      StackeryName: testFunction
+  objectStore7DE86E3B:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-objectstore7de86e3b
+    Metadata:
+      StackeryName: testBucket
+  dockerTask7CD071:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Image: hello-world
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref dockerTask7CD071LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: hello-world
+          Name: 0
+          Environment: []
+      Cpu: 256
+      ExecutionRoleArn: !GetAtt dockerTask7CD071ExecutionRole.Arn
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn: !GetAtt dockerTask7CD071TaskRole.Arn
+      Volumes: []
+    DependsOn: dockerTask7CD071LogGroup
+    Metadata:
+      StackeryName: testTaskDef
+  dockerTask7CD071LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /stackery/task/${AWS::StackName}-dockerTask7CD071/hello-world
+  dockerTask7CD071ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-DockerTaskExecutionRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+        - PolicyName: DownloadDockerImagesFromECR
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:*:*:log-group:/stackery/task/${AWS::StackName}-*
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: '*'
+  dockerTask7CD071TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-DockerTaskTaskRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com
+          Action: sts:AssumeRole
+Parameters:
+  StackeryStackTagName:
+    Type: String
+    Description: Stack Name (injected by Stackery at deployment time)
+  StackeryEnvironmentTagName:
+    Type: String
+    Description: Environment Name (injected by Stackery at deployment time)
+  DefaultVPCSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: AWS account-specific default VPC subnets (injected by Stackery at deployment time)
