@@ -1,2 +1,2 @@
-# stackery-empty-stack-template
-An empty stack template for creating Stackery apps
+# Test Stackery
+A stack for testing Stackery
