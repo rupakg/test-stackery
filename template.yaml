@@ -25,10 +25,6 @@ Resources:
               Value: test.png
             - Name: POSITION_TIME_DURATION
               Value: 00:01
-            - Name: FUNCTION_NAME
-              Value: !Ref function198973DB
-            - Name: FUNCTION_ARN
-              Value: !GetAtt function198973DB.Arn
       Cpu: 256
       ExecutionRoleArn: !GetAtt dockerTaskA26298F2ExecutionRole.Arn
       Memory: 512
@@ -83,16 +79,6 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Action: sts:AssumeRole
-      Policies:
-        - PolicyName: StackeryPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource:
-                  - !GetAtt function198973DB.Arn
   function198973DB:
     Type: AWS::Serverless::Function
     Properties:
@@ -108,8 +94,50 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ecs:RunTask
+                - ecs:DescribeTasks
+                - ecs:StopTask
+              Resource:
+                - !Ref dockerTaskA26298F2
+                - !Sub arn:aws:ecs:${AWS::Region}:${AWS::AccountId}:task/*
+        - Statement:
+            - Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource:
+                - !GetAtt dockerTaskA26298F2ExecutionRole.Arn
+                - !GetAtt dockerTaskA26298F2TaskRole.Arn
+      Events:
+        objectStore4A6D3EEE:
+          Type: S3
+          Properties:
+            Bucket: !Ref objectStore4A6D3EEE
+            Events:
+              - s3:ObjectCreated:*
+              - s3:ObjectRemoved:*
+      Environment:
+        Variables:
+          DOCKER_TASK_ARN: !Ref dockerTaskA26298F2
+          DOCKER_TASK_SUBNETS: !Join
+            - ','
+            - !Ref DefaultVPCSubnets
     Metadata:
       StackeryName: runThumbECSTask
+  objectStore4A6D3EEE:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
+    Metadata:
+      StackeryName: videoInput
+  objectStore16B4761A:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-objectstore16b4761a
+    Metadata:
+      StackeryName: thumbOutput
 Parameters:
   StackeryStackTagName:
     Type: String
@@ -117,3 +145,6 @@ Parameters:
   StackeryEnvironmentTagName:
     Type: String
     Description: Environment Name (injected by Stackery at deployment time)
+  DefaultVPCSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: AWS account-specific default VPC subnets (injected by Stackery at deployment time)
