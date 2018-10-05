@@ -110,6 +110,15 @@ Resources:
               Resource:
                 - !GetAtt dockerTaskA26298F2ExecutionRole.Arn
                 - !GetAtt dockerTaskA26298F2TaskRole.Arn
+      Environment:
+        Variables:
+          DOCKER_TASK_SUBNETS: !Join
+            - ','
+            - !Ref DefaultVPCSubnets
+          DOCKER_TASK_ARN: !Ref dockerTaskA26298F2
+          DOCKER_TASK_SUBNETS_2: !Join
+            - ','
+            - !Ref DefaultVPCSubnets
       Events:
         objectStore4A6D3EEE:
           Type: S3
@@ -118,12 +127,6 @@ Resources:
             Events:
               - s3:ObjectCreated:*
               - s3:ObjectRemoved:*
-      Environment:
-        Variables:
-          DOCKER_TASK_ARN: !Ref dockerTaskA26298F2
-          DOCKER_TASK_SUBNETS: !Join
-            - ','
-            - !Ref DefaultVPCSubnets
     Metadata:
       StackeryName: runThumbECSTask
   objectStore4A6D3EEE:
