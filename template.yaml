@@ -25,6 +25,10 @@ Resources:
               Value: test.png
             - Name: POSITION_TIME_DURATION
               Value: 00:01
+            - Name: FUNCTION_NAME
+              Value: !Ref function198973DB
+            - Name: FUNCTION_ARN
+              Value: !GetAtt function198973DB.Arn
       Cpu: 256
       ExecutionRoleArn: !GetAtt dockerTaskA26298F2ExecutionRole.Arn
       Memory: 512
@@ -79,3 +83,37 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StackeryPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !GetAtt function198973DB.Arn
+  function198973DB:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-function198973DB
+      Description: !Sub
+        - Stackery Stack ${StackeryStackTagName} Environment ${StackeryEnvironmentTagName} Function ${ResourceName}
+        - ResourceName: runThumbECSTask
+      CodeUri: src/runthumbecstask
+      Handler: index.handler
+      Runtime: nodejs6.10
+      MemorySize: 512
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+    Metadata:
+      StackeryName: runThumbECSTask
+Parameters:
+  StackeryStackTagName:
+    Type: String
+    Description: Stack Name (injected by Stackery at deployment time)
+  StackeryEnvironmentTagName:
+    Type: String
+    Description: Environment Name (injected by Stackery at deployment time)
