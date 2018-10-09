@@ -45,11 +45,11 @@ module.exports.handler = function handler (event, context, callback) {
 
 var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
 
-  const docker_subnet_items = DOCKER_TASK_SUBNETS.split(',').join(',');
+  const docker_subnet_items = DOCKER_TASK_SUBNETS.split(',');
   console.log("docker_subnet_items", docker_subnet_items);
 
   // run an ECS Fargate task
-  const params = {
+  var params = {
     cluster: `${ECS_CLUSTER_NAME}`,
     launchType: 'FARGATE',
     taskDefinition: `${ECS_TASK_DEFINITION}`,
@@ -57,7 +57,7 @@ var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
     platformVersion:'LATEST',
     networkConfiguration: {
       awsvpcConfiguration: {
-          subnets: [`${docker_subnet_items}`],
+          subnets: [],
           assignPublicIp: 'ENABLED'
       }
     },
@@ -91,6 +91,8 @@ var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
       ]
     }
   };
+  // assign the subnets
+  params.networkConfiguration.awsvpcConfiguration.subnets = docker_subnet_items;
 
   ecsApi.runECSTask(params);
 
