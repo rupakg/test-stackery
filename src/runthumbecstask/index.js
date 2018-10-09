@@ -17,6 +17,10 @@ module.exports.handler = function handler (event, context, callback) {
   
   const bucket = event.Records[0].s3.bucket.name;
   const key = event.Records[0].s3.object.key;
+  const eventName = event.Records[0].eventName;
+
+  // only process S3 ObjectCreated events
+  if (!eventName.includes('ObjectCreated:')) return;
 
   console.log(JSON.stringify(event));
   console.log(`A new video file '${key}' was uploaded to '${bucket}' for processing.`);
@@ -56,7 +60,7 @@ var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
     overrides: {
       containerOverrides: [
         {
-          name: 'ffmpeg-thumb',
+          name: '0',
           environment: [
             {
               name: 'INPUT_VIDEO_FILE_URL',
