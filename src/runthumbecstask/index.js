@@ -20,13 +20,16 @@ module.exports.handler = function handler (event, context, callback) {
   const eventName = event.Records[0].eventName;
 
   // only process S3 ObjectCreated events
-  if (!eventName.includes('ObjectCreated:')) return;
+  if (!eventName.includes('ObjectCreated:')) {
+    callback(null, {});
+    return;
+  }
 
   console.log(JSON.stringify(event));
   console.log(`A new video file '${key}' was uploaded to '${bucket}' for processing.`);
 
-  console.log("ENV: DOCKER_TASK_ARN", DOCKER_TASK_ARN)
-  console.log("ENV: DOCKER_TASK_SUBNETS", DOCKER_TASK_SUBNETS)
+  console.log("ENV: DOCKER_TASK_ARN", DOCKER_TASK_ARN);
+  console.log("ENV: DOCKER_TASK_SUBNETS", DOCKER_TASK_SUBNETS);
 
   // parse the file processing details
   // video file: test_00-08.mp4
@@ -42,6 +45,9 @@ module.exports.handler = function handler (event, context, callback) {
 
 var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
 
+  const docker_subnet_items = DOCKER_TASK_SUBNETS.split(',');
+  console.log("docker_subnet_items", docker_subnet_items);
+
   // run an ECS Fargate task
   const params = {
     cluster: `${ECS_CLUSTER_NAME}`,
@@ -51,9 +57,7 @@ var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
     platformVersion:'LATEST',
     networkConfiguration: {
       awsvpcConfiguration: {
-          subnets: [
-              `${DOCKER_TASK_SUBNETS}`
-          ],
+          subnets: `${docker_subnet_items}`,
           assignPublicIp: 'ENABLED'
       }
     },
