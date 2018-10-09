@@ -57,7 +57,7 @@ var runThumbnailGenerateTask = (s3_video_url, thumbnail_file, frame_pos) => {
     platformVersion:'LATEST',
     networkConfiguration: {
       awsvpcConfiguration: {
-          subnets: `${docker_subnet_items}`,
+          subnets: [`${docker_subnet_items}.join(',')`],
           assignPublicIp: 'ENABLED'
       }
     },
