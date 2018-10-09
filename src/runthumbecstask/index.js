@@ -11,7 +11,7 @@ const ECS_TASK_DEFINITION = 'stackery-156497753425579-dockerTaskA26298F2-XN7H6VY
 const OUTPUT_S3_PATH = 'stackery-156497753425579-objectstore16b4761a'; // process.env.OUTPUT_S3_PATH;
 const OUTPUT_S3_AWS_REGION = 'us-east-1'; // process.env.OUTPUT_S3_AWS_REGION;
 
-const ecsApi = require('../lib/ecs');
+const ecsApi = require('./ecs');
 
 module.exports.handler = function handler (event, context, callback) {
   
