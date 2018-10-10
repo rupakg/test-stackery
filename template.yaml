@@ -120,9 +120,6 @@ Resources:
             - ','
             - !Ref DefaultVPCSubnets
           DOCKER_TASK_ARN: !Ref dockerTaskA26298F2
-          DOCKER_TASK_SUBNETS_2: !Join
-            - ','
-            - !Ref DefaultVPCSubnets
           BUCKET_NAME: !Sub ${AWS::StackName}-objectstore4a6d3eee
           BUCKET_NAME_2: !Sub ${AWS::StackName}-objectstore16b4761a
       Events:
