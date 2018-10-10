@@ -68,6 +68,10 @@ Resources:
                   - ecr:GetDownloadUrlForLayer
                   - ecr:BatchGetImage
                 Resource: '*'
+        - S3CrudPolicy:
+            BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
+        - S3CrudPolicy:
+            BucketName: !Sub ${AWS::StackName}-objectstore16b4761a
   dockerTaskA26298F2TaskRole:
     Type: AWS::IAM::Role
     Properties:
