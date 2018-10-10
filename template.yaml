@@ -110,6 +110,14 @@ Resources:
               Resource:
                 - !GetAtt dockerTaskA26298F2ExecutionRole.Arn
                 - !GetAtt dockerTaskA26298F2TaskRole.Arn
+        - Statement:
+            - Effect: Allow
+              Principal: '*'
+              Action:
+                - s3:GetObject
+              Resource:
+                - !Sub arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${AWS::StackName}-objectstore4a6d3eee/*      
+                - !Sub arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${AWS::StackName}-objectstore16b4761a/*
         - S3CrudPolicy:
             BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
         - S3CrudPolicy:
