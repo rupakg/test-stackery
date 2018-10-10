@@ -136,12 +136,14 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
+      AccessControl: PublicRead
     Metadata:
       StackeryName: videoInput
   objectStore16B4761A:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub ${AWS::StackName}-objectstore16b4761a
+      AccessControl: PublicRead
     Metadata:
       StackeryName: thumbOutput
 Parameters:
