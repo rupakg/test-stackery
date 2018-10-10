@@ -112,7 +112,6 @@ Resources:
                 - !GetAtt dockerTaskA26298F2TaskRole.Arn
         - Statement:
             - Effect: Allow
-              Principal: '*'
               Action:
                 - s3:GetObject
               Resource:
