@@ -25,6 +25,10 @@ Resources:
               Value: test.png
             - Name: POSITION_TIME_DURATION
               Value: 00:01
+            - Name: BUCKET_NAME
+              Value: !Ref objectStore16B4761A
+            - Name: BUCKET_ARN
+              Value: !GetAtt objectStore16B4761A.Arn
       Cpu: 256
       ExecutionRoleArn: !GetAtt dockerTaskA26298F2ExecutionRole.Arn
       Memory: 512
@@ -79,6 +83,23 @@ Resources:
           Principal:
             Service: ecs-tasks.amazonaws.com
           Action: sts:AssumeRole
+      Policies:
+        - PolicyName: StackeryPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:GetLifecycleConfiguration
+                  - s3:PutLifecycleConfiguration
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::${objectStore16B4761A}
+                  - !Sub arn:${AWS::Partition}:s3:::${objectStore16B4761A}/*
   function198973DB:
     Type: AWS::Serverless::Function
     Properties:
