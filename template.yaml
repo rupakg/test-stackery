@@ -115,8 +115,8 @@ Resources:
               Action:
                 - s3:GetObject
               Resource:
-                - !Sub arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${AWS::StackName}-objectstore4a6d3eee/*      
-                - !Sub arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${AWS::StackName}-objectstore16b4761a/*
+                - !Sub arn:aws:s3::${AWS::AccountId}:${AWS::StackName}-objectstore4a6d3eee/*      
+                - !Sub arn:aws:s3::${AWS::AccountId}:${AWS::StackName}-objectstore16b4761a/*
         - S3CrudPolicy:
             BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
         - S3CrudPolicy:
