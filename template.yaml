@@ -111,7 +111,7 @@ Resources:
                 - !GetAtt dockerTaskA26298F2ExecutionRole.Arn
                 - !GetAtt dockerTaskA26298F2TaskRole.Arn
         - S3CrudPolicy:
-            BucketName: !Sub ${AWS::StackName}-objectstorexxx
+            BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
       Environment:
         Variables:
           DOCKER_TASK_SUBNETS: !Join
@@ -121,7 +121,7 @@ Resources:
           DOCKER_TASK_SUBNETS_2: !Join
             - ','
             - !Ref DefaultVPCSubnets
-          BUCKET_NAME: !Sub ${AWS::StackName}-objectstorexxx
+          BUCKET_NAME: !Sub ${AWS::StackName}-objectstore4a6d3eee
       Events:
         objectStore4A6D3EEE:
           Type: S3
