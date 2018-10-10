@@ -113,7 +113,7 @@ Resources:
         - S3CrudPolicy:
             BucketName: !Sub ${AWS::StackName}-objectstore4a6d3eee
         - S3CrudPolicy:
-            BucketName: !Sub ${AWS::StackName}-objectStore16b4761a
+            BucketName: !Sub ${AWS::StackName}-objectstore16b4761a
       Environment:
         Variables:
           DOCKER_TASK_SUBNETS: !Join
@@ -124,7 +124,7 @@ Resources:
             - ','
             - !Ref DefaultVPCSubnets
           BUCKET_NAME: !Sub ${AWS::StackName}-objectstore4a6d3eee
-          BUCKET_NAME_2: !Sub ${AWS::StackName}-objectStore16b4761a
+          BUCKET_NAME_2: !Sub ${AWS::StackName}-objectstore16b4761a
       Events:
         objectStore4A6D3EEE:
           Type: S3
